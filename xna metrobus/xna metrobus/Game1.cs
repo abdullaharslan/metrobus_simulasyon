@@ -97,18 +97,23 @@ namespace xna_metrobus
             //    Exit();
 
             camera.Update(gameTime);
+            
+            bool seyehatTamamlandý1 = true;
+            bool seyehatTamamlandý2 = true;
             Otobus.otobuslerYeniModel.ForEach(o => { 
                     //if( o.renk!=Renk.Kýrmýzý || gameTime.TotalGameTime.Seconds>5) 
-                        o.Update(gameTime); 
+                o.Update(gameTime);
+                if (!o.seyehatTamamlandi) seyehatTamamlandý1 = false;
             });
-            bool seyehatTamamlandý = true;
+            
             Otobus.otobuslerEskiModel.ForEach(o =>
             {
                 o.Update(gameTime);
-                if (!o.seyehatTamamlandi) seyehatTamamlandý = false;
+                if (!o.seyehatTamamlandi) seyehatTamamlandý2 = false;
             });
-            
-            if (seyehatTamamlandý) Exit();
+
+            if (seyehatTamamlandý1 && seyehatTamamlandý2 && Otobus.otobuslerYeniModel.Count > 0) 
+                Exit();
 
             base.Update(gameTime);
         } 

@@ -25,7 +25,7 @@ namespace xna_metrobus {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        [global::System.Configuration.DefaultSettingValueAttribute("24")]
         public int FrekansSn {
             get {
                 return ((int)(this["FrekansSn"]));

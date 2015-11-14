@@ -90,7 +90,10 @@ namespace xna_metrobus
             }
 
             if (!controlEnabled && escapeClicked)
+            {
                 Game.Exit();
+            }
+                
 
             if (controlEnabled && escapeClicked)
                 controlEnabled = false;
