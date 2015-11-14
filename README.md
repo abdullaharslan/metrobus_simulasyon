@@ -21,9 +21,9 @@ Böylece beylikdüzünden hareket eden bir otobüs daha az durakta durarak daha 
 Bu fikrin açık bir dezavantajı var: Örneğin kırmızı renk olan birinci duraktan binen bir yolcu mavi renk olan 10. durakta inemeyecek.  
 Bu kısıtın olumsuz etkisi aşağıdaki önlemler ile minimize edilebilebilir: 
 Metrobüs kullanan yolcular metrobüs hattına aşağıdaki şekillerde ulaşıp yolculuklarına metrobüs ile devam ediyorlar. 
-* dolmuş/otobüs 
-* kendi aracı 
-* yürüyerek 
+* dolmuş/otobüs
+* kendi araçları ile
+* yürüyerek
 
 1. metrobüse erişim için kullanılan dolmuş/otobüs hatlarının hem mavi hem kırmızı duraklara uğraması sağlanır. Böylece dolmuş/otobüs yolcuları seyehatlarına uygun renkteki duraktan metrobüse binebilirler. 
 2. Metrobüse kadar kendi aracı ile gidip yolculuğuna metrobüs ile devam edenler araçları ile bir önceki/bir sonraki durağa gidebilirler. Bunun için park imkanları iyileştirilmelidir. 
