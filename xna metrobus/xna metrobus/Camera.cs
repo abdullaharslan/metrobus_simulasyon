@@ -21,10 +21,16 @@ namespace xna_metrobus
         public float speedLeftRight = 300f;
         public float turnSpeed = 10f;
         public float farPlaneDistance = 3000;
-        
+
+        bool controlEnabled = true;
+        MouseState _currentMouseState;
+        MouseState _previousMouseState;
+        KeyboardState _currentKeyboardState;
+        KeyboardState _previousKeyboardState;
+
         public Camera(Game game)
             : base(game)
-        {
+        { 
             if (ActiveCamera == null)
                 ActiveCamera = this;
         }
@@ -44,28 +50,61 @@ namespace xna_metrobus
         {
             float ratio = (float)GraphicsDevice.Viewport.Width / (float)GraphicsDevice.Viewport.Height;
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, ratio, 5, farPlaneDistance);
-            //
+
+            _currentMouseState = Mouse.GetState();
+            _previousMouseState = _currentMouseState;
+
+            _currentKeyboardState = Keyboard.GetState();
+            _previousKeyboardState = _currentKeyboardState;
+
             base.LoadContent();
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+            if (!Game.IsActive)
+                return;
 
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             KeyboardState keyboard = Keyboard.GetState();
             MouseState mouse = Mouse.GetState();
 
+            _previousMouseState = _currentMouseState;
+            _currentMouseState = Mouse.GetState();
+
+            _previousKeyboardState = _currentKeyboardState;
+            _currentKeyboardState = Keyboard.GetState();
+
+            bool mouseClicked = (_previousMouseState.LeftButton == ButtonState.Released && _currentMouseState.LeftButton == ButtonState.Pressed);
+            bool escapeClicked = !_previousKeyboardState.IsKeyDown(Keys.Escape) && _currentKeyboardState.IsKeyDown(Keys.Escape);
+
             //Now we have the current state, let’s just set the mouse cursor back in the center of the screen, so we don’t forget it later on.
             int centerX = Game.Window.ClientBounds.Width / 2;
             int centerY = Game.Window.ClientBounds.Height / 2;
 
-            //Mouse.SetPosition(centerX, centerY);
+            if (!controlEnabled && mouseClicked)
+            {
+                controlEnabled = true;                
+            }
+
+            if (!controlEnabled && escapeClicked)
+                Game.Exit();
+
+            if (controlEnabled && escapeClicked)
+                controlEnabled = false;
+
+            
+
+            if (!controlEnabled)
+                return;
+
+            Mouse.SetPosition(centerX, centerY);
 
             //Let’s adjust our angle variable according to the mouse movement.
-            //angle.X += MathHelper.ToRadians((mouse.Y - centerY) * turnSpeed * 0.01f); // pitch
-            //angle.Y += MathHelper.ToRadians((mouse.X - centerX) * turnSpeed * 0.01f); // yaw
+            angle.X += MathHelper.ToRadians((mouse.Y - centerY) * turnSpeed * 0.01f); // pitch
+            angle.Y += MathHelper.ToRadians((mouse.X - centerX) * turnSpeed * 0.01f); // yaw
 
             //Now that we have our angle, we can easily calculate our pitch and yaw vector (relative movement). I have to warn you, you’ll need your basic trigonometry, if you’re a bit rusty, fresh it up ;-). We’ll need this so we can move in the direction we’re looking at.
             Vector3 forward = Vector3.Normalize(new Vector3((float)Math.Sin(-angle.Y), (float)Math.Sin(angle.X), (float)Math.Cos(-angle.Y)));

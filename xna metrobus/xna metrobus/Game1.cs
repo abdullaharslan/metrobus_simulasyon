@@ -93,8 +93,8 @@ namespace xna_metrobus
         protected override void Update(GameTime gameTime)
         {
             KeyboardState keyboardState = Keyboard.GetState();
-            if (keyboardState.IsKeyDown(Keys.Escape))
-                Exit();
+            //if (keyboardState.IsKeyDown(Keys.Escape))
+            //    Exit();
 
             camera.Update(gameTime);
             Otobus.otobuslerYeniModel.ForEach(o => { 
