@@ -28,7 +28,9 @@ namespace xna_metrobus
         Timer timer;
          
         float aspectRatio;
-        
+        SpriteFont Font1;
+        private SpriteBatch spriteBatch;
+        Vector2 FontPos;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -73,7 +75,11 @@ namespace xna_metrobus
             Durak.LoadContent();
              
             yol = Content.Load<Model>("Models\\SingleRoad");
-            zemin = Content.Load<Model>("Models\\plain");  
+            zemin = Content.Load<Model>("Models\\plain");
+
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            Font1 = Content.Load<SpriteFont>("SpriteFont1");//SpriteFont1
+            FontPos = new Vector2(110,10);
         }
 
         /// <summary>
@@ -112,8 +118,8 @@ namespace xna_metrobus
                 if (!o.seyehatTamamlandi) seyehatTamamlandý2 = false;
             });
 
-            if (seyehatTamamlandý1 && seyehatTamamlandý2 && Otobus.otobuslerYeniModel.Count > 0) 
-                Exit();
+            //if (seyehatTamamlandý1 && seyehatTamamlandý2 && Otobus.otobuslerYeniModel.Count > 0) 
+            //    Exit();
 
             base.Update(gameTime);
         } 
@@ -121,31 +127,62 @@ namespace xna_metrobus
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+            
+
             Durak.duraklar.ForEach(o => o.Draw(gameTime));
             Otobus.otobuslerYeniModel.ForEach(o => o.Draw(gameTime));
             Otobus.otobuslerEskiModel.ForEach(o => o.Draw(gameTime));
              
             ZeminCiz(zemin);
             YolCiz(yol);
-             
-            
+
+
+            EkranYaziYaz();
+
             GraphicsDevice.BlendState = BlendState.AlphaBlend;        
              
             base.Draw(gameTime);
         }
-         
+
+        private void EkranYaziYaz()
+        {
+            Window.Title = "Metrobüs Simulasyon - ";
+            var siraliDuraklar = Durak.duraklar.OrderBy(d => d.KonumX).ToList();
+            var sonrakiDurak = siraliDuraklar.Where(d => d.KonumX > camera.position.X).FirstOrDefault();
+            if (sonrakiDurak == null && siraliDuraklar.Count > 0)
+                Window.Title += siraliDuraklar.Last().durakAdi ;
+            else if(sonrakiDurak!=null)
+            {
+                var oncekiDurak = siraliDuraklar.Where(d => d.KonumX < camera.position.X).LastOrDefault();
+                if (oncekiDurak == null)
+                {
+                    Window.Title += sonrakiDurak.durakAdi  ;
+                    return;
+                }
+
+                var oncekiDuragaMesafe = camera.position.X - oncekiDurak.KonumX;
+                var sonrakiDuragaMesafe = sonrakiDurak.KonumX - camera.position.X;
+                 
+                if (oncekiDuragaMesafe > sonrakiDuragaMesafe)
+                    Window.Title += sonrakiDurak.durakAdi ;
+                else
+                    Window.Title += oncekiDurak.durakAdi;
+            }            
+        }
+
+         Vector3 yolPosition = new Vector3(-60, 0.5f, 0);
         private void YolCiz(Model yol)
         {
             int uzatma = 5200;
             float genislik = 10;
             int tekrar = 1;
-            Vector3 position = new Vector3(-60, 0.5f, 0);
+            yolPosition = new Vector3(-60, 0.5f, 0);
             for (int i = 0; i < tekrar; i++)
             {
-                ModelCiz(yol, MathHelper.ToRadians(-90), position+new Vector3(0,-0.1f,6.5f),new Vector3(1,1,uzatma));
-                ModelCiz(yol, MathHelper.ToRadians(-90), position + new Vector3(0, -0.1f, -2.7f), new Vector3(1, 1, uzatma));
+                ModelCiz(yol, MathHelper.ToRadians(-90), yolPosition+new Vector3(0,-0.1f,6.5f),new Vector3(1,1,uzatma));
+                ModelCiz(yol, MathHelper.ToRadians(-90), yolPosition + new Vector3(0, -0.1f, -2.7f), new Vector3(1, 1, uzatma));
                 
-                position += new Vector3(genislik*uzatma, 0, 0);
+                yolPosition += new Vector3(genislik*uzatma, 0, 0);
             }
         }
 
@@ -174,49 +211,49 @@ namespace xna_metrobus
             }
         }
 
-        private void YolZeminCiz(Model yolZeminModel, int times)
-        {
-            float modelGenisligi = 23f;
+        //private void YolZeminCiz(Model yolZeminModel, int times)
+        //{
+        //    float modelGenisligi = 23f;
 
-            Vector3 position = new Vector3(-1 * modelGenisligi * times * 1f/30f, 0, 0);
-            // Draw the model. A model can have multiple meshes, so loop.
-            for (int i = 1; i <= times; i++)
-            {    // Copy any parent transforms.
-            Matrix[] transforms = new Matrix[yolZeminModel.Bones.Count];
-            yolZeminModel.CopyAbsoluteBoneTransformsTo(transforms);             
-                foreach (ModelMesh mesh in yolZeminModel.Meshes)
-                {
-                    // This is where the mesh orientation is set, as well 
-                    // as our camera and projection.
-                    foreach (BasicEffect effect in mesh.Effects)
-                    {
-                        effect.EnableDefaultLighting();
-                        effect.World = transforms[mesh.ParentBone.Index]
-                            * Matrix.CreateScale(1)
-                            * Matrix.CreateRotationY(0)
-                            * Matrix.CreateTranslation(position)
-                            ;
-                        effect.View = Camera.ActiveCamera.View;
-                        effect.Projection = Camera.ActiveCamera.Projection;
+        //    Vector3 position = new Vector3(-1 * modelGenisligi * times * 1f/30f, 0, 0);
+        //    // Draw the model. A model can have multiple meshes, so loop.
+        //    for (int i = 1; i <= times; i++)
+        //    {    // Copy any parent transforms.
+        //    Matrix[] transforms = new Matrix[yolZeminModel.Bones.Count];
+        //    yolZeminModel.CopyAbsoluteBoneTransformsTo(transforms);             
+        //        foreach (ModelMesh mesh in yolZeminModel.Meshes)
+        //        {
+        //            // This is where the mesh orientation is set, as well 
+        //            // as our camera and projection.
+        //            foreach (BasicEffect effect in mesh.Effects)
+        //            {
+        //                effect.EnableDefaultLighting();
+        //                effect.World = transforms[mesh.ParentBone.Index]
+        //                    * Matrix.CreateScale(1)
+        //                    * Matrix.CreateRotationY(0)
+        //                    * Matrix.CreateTranslation(position)
+        //                    ;
+        //                effect.View = Camera.ActiveCamera.View;
+        //                effect.Projection = Camera.ActiveCamera.Projection;
 
-                        effect.LightingEnabled = true; // turn on the lighting subsystem.
-                        effect.DirectionalLight0.DiffuseColor = new Vector3(1f, 1, 1); // a red light
-                        effect.DirectionalLight0.Direction = new Vector3(0, 50, 0);  // coming along the x-axis
-                        effect.DirectionalLight0.SpecularColor = new Vector3(1, 1, 1); // with green highlights
+        //                effect.LightingEnabled = true; // turn on the lighting subsystem.
+        //                effect.DirectionalLight0.DiffuseColor = new Vector3(1f, 1, 1); // a red light
+        //                effect.DirectionalLight0.Direction = new Vector3(0, 50, 0);  // coming along the x-axis
+        //                effect.DirectionalLight0.SpecularColor = new Vector3(1, 1, 1); // with green highlights
 
-                        effect.DirectionalLight1.DiffuseColor = new Vector3(100f, 100, 100); // a red light
-                        effect.DirectionalLight1.Direction = new Vector3(0, 50, 50);  // coming along the x-axis
-                        effect.DirectionalLight1.SpecularColor = new Vector3(1, 1, 1); // with green highlights
+        //                effect.DirectionalLight1.DiffuseColor = new Vector3(100f, 100, 100); // a red light
+        //                effect.DirectionalLight1.Direction = new Vector3(0, 50, 50);  // coming along the x-axis
+        //                effect.DirectionalLight1.SpecularColor = new Vector3(1, 1, 1); // with green highlights
 
 
-                        effect.AmbientLightColor = new Vector3(100f, 100f, 100f);
-                    }
-                    // Draw the mesh, using the effects set above.
-                    mesh.Draw();
-                    position += new Vector3(modelGenisligi, 0, 0);
-                }
-            }
-        }
+        //                effect.AmbientLightColor = new Vector3(100f, 100f, 100f);
+        //            }
+        //            // Draw the mesh, using the effects set above.
+        //            mesh.Draw();
+        //            position += new Vector3(modelGenisligi, 0, 0);
+        //        }
+        //    }
+        //}
         
         private void ModelCiz(Model myModel, float modelRotation, Vector3 modelPosition, Vector3 scale )
         {
@@ -245,7 +282,7 @@ namespace xna_metrobus
                     effect.View = Camera.ActiveCamera.View;
                     effect.Projection = Camera.ActiveCamera.Projection;
 
-                    effect.LightingEnabled = true; // turn on the lighting subsystem.
+                    //effect.LightingEnabled = true; // turn on the lighting subsystem.
                     effect.DirectionalLight0.DiffuseColor = new Vector3(1f, 1, 1); // a red light
                     effect.DirectionalLight0.Direction = new Vector3(0, 50, 0);  // coming along the x-axis
                     effect.DirectionalLight0.SpecularColor = new Vector3(1, 1, 1); // with green highlights
@@ -254,16 +291,18 @@ namespace xna_metrobus
                     effect.DirectionalLight1.Direction = new Vector3(0, 50, 50);  // coming along the x-axis
                     effect.DirectionalLight1.SpecularColor = new Vector3(1, 1, 1); // with green highlights
 
-
+                   
                     effect.AmbientLightColor = new Vector3(100f, 100f, 100f);
                 }
                 // Draw the mesh, using the effects set above.
+                
                 mesh.Draw();
             }
         }
 
         Renk sonGonderilenOtobusRengi = Renk.Kýrmýzý;
         int otobusSayisi = 0;
+
         private  void OtobusGonder(Object o)
         {
             if (otobusSayisi == Ayar.Default.ToplamOtobusSayisi)

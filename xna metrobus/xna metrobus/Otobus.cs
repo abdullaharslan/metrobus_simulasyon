@@ -134,7 +134,7 @@ namespace xna_metrobus
         {
             if (sonDurak == null)
                 sonDurak = Durak.duraklar.OrderByDescending(d => d.KonumX).FirstOrDefault();
-            if (!seyehatTamamlandi && (sonDurak == null || KonumX > sonDurak.KonumX + 600))
+            if (!seyehatTamamlandi && Durak.duraklar.Count>0 && (sonDurak == null || KonumX > sonDurak.KonumX + 600))
             {
                 seyehatTamamlandi = true;
                 var sure = DateTime.Now.Subtract(seyehatBaslangicZamani);
