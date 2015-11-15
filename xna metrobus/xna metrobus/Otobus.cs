@@ -132,13 +132,14 @@ namespace xna_metrobus
 
         public void Update(GameTime gameTime)
         {
-            if (sonDurak == null)
+            if (sonDurak == null && Durak.duraklar.Count > 0) // duraklar oluşturulunca sondurağı tespit et.
                 sonDurak = Durak.duraklar.OrderByDescending(d => d.KonumX).FirstOrDefault();
+
             if (!seyehatTamamlandi && Durak.duraklar.Count>0 && (sonDurak == null || KonumX > sonDurak.KonumX + 600))
             {
                 seyehatTamamlandi = true;
                 var sure = DateTime.Now.Subtract(seyehatBaslangicZamani);
-                logger.Info(id + " seyehati tamamladı. Toplam gecen süre (sn):"+(sure.TotalMinutes*Ayar.Default.SimulasyonHizi));
+                logger.Info(id + " seyehati tamamladı. Toplam gecen süre (dk):"+(sure.TotalMinutes*Ayar.Default.SimulasyonHizi));
             }
            
 
@@ -202,13 +203,6 @@ namespace xna_metrobus
 
             KonumGuncelle(gameTime);
 
-            //if (DateTime.Now.Subtract(sonPrint).Milliseconds >= 200)
-            //{
-            //    //   Console.WriteLine("X:{3} Hız:{0} Durum:{1} SonrakiDuraga:{2} g.Durus:{4} t:{5}", hiz.ToString("00"), durum, SonrakiDuragaMesafe,
-            //    //    KonumX.ToString("00"), GuvenliDurusMesafesi.ToString("000"),DateTime.Now.ToString("mm:ss fff"));
-            //    sonPrint = DateTime.Now;
-            //}
-
         }
 
         /// <summary>
@@ -269,11 +263,11 @@ namespace xna_metrobus
                 if(yeniModel && (durak.renk!=Renk.Yesil&&durak.renk!=this.renk) 
                     || durak.KonumX<this.KonumX) continue;
 
-                if (Mesafe.ToMetre(durak.KonumX - this.KonumX) <= guvenliDurusMesafesi)
-                {
-                    Console.WriteLine("Bizim konum:{0} durak:{1} hız:{2} guvenliDurus:{3} ", KonumX, durak.KonumX,hiz,guvenliDurusMesafesi);
-                    return true;
-                }
+                //if (Mesafe.ToMetre(durak.KonumX - this.KonumX) <= guvenliDurusMesafesi)
+                //{
+                //    Console.WriteLine("Bizim konum:{0} durak:{1} hız:{2} guvenliDurus:{3} ", KonumX, durak.KonumX,hiz,guvenliDurusMesafesi);
+                //    return true;
+                //}
                     
             }
             return false;
@@ -343,12 +337,5 @@ namespace xna_metrobus
         Yesil,
         [Description("G")]
         Gri 
-    }
-
-    enum Durum
-    {
-        Duruyor,
-        Hizlaniyor,
-        Yavasliyor
     }
 }

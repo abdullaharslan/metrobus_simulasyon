@@ -104,22 +104,22 @@ namespace xna_metrobus
 
             camera.Update(gameTime);
             
-            bool seyehatTamamlandý1 = true;
-            bool seyehatTamamlandý2 = true;
+            bool seyehatTamamlandý = true; 
             Otobus.otobuslerYeniModel.ForEach(o => { 
                     //if( o.renk!=Renk.Kýrmýzý || gameTime.TotalGameTime.Seconds>5) 
                 o.Update(gameTime);
-                if (!o.seyehatTamamlandi) seyehatTamamlandý1 = false;
+                if (!o.seyehatTamamlandi) seyehatTamamlandý = false;
             });
             
             Otobus.otobuslerEskiModel.ForEach(o =>
             {
                 o.Update(gameTime);
-                if (!o.seyehatTamamlandi) seyehatTamamlandý2 = false;
+                if (!o.seyehatTamamlandi) seyehatTamamlandý = false;
             });
 
-            //if (seyehatTamamlandý1 && seyehatTamamlandý2 && Otobus.otobuslerYeniModel.Count > 0) 
-            //    Exit();
+            // bir dakkadan once otomatik kapanma olmasýn. 5den az otobüs varsa otomatik kapanma olmasýn.
+            if (seyehatTamamlandý && Otobus.otobuslerYeniModel.Count > 5 && gameTime.TotalGameTime.TotalMinutes>1) 
+                Exit();
 
             base.Update(gameTime);
         } 
@@ -127,12 +127,12 @@ namespace xna_metrobus
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
-            
+
 
             Durak.duraklar.ForEach(o => o.Draw(gameTime));
             Otobus.otobuslerYeniModel.ForEach(o => o.Draw(gameTime));
             Otobus.otobuslerEskiModel.ForEach(o => o.Draw(gameTime));
-             
+
             ZeminCiz(zemin);
             YolCiz(yol);
 

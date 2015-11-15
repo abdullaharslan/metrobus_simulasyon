@@ -106,15 +106,9 @@ namespace xna_metrobus
                 }
                 // Draw the mesh, using the effects set above.
                 mesh.Draw();
-            }
-            //DrawDurakAdi();
-        }
-
-        private void DrawDurakAdi()
-        {
-             
-        }
-
+            } 
+        } 
+        
         internal static void DuraklariOlustur()
         {
             TextReader reader = new StreamReader("duraklar.txt");
